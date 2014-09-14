@@ -1,8 +1,12 @@
 #include <iostream>
 #include <niflib.h>
 #include <obj/NiObject.h>
+#include <obj/NiSourceTexture.h>
+#include <obj/NiGeometryData.h>
 
 #include "Settings.hpp"
+#include "Texture.hpp"
+#include "Mesh.hpp"
 
 using namespace std;
 using namespace Niflib;
@@ -24,7 +28,22 @@ int main(int argc, char** argv) {
 
         vector<NiObjectRef> list = ReadNifList(settings.getSourceFile());
 
-        cout << list[0]->asString() << endl;
+        for (int i = 0; i < list.size(); i++) {
+
+            cout << list[i]->GetIDString() << endl;
+
+            if (list[i]->IsDerivedType(NiGeometryData::TYPE)) {
+
+                Mesh mesh(list[i]);
+
+                cout << mesh.toString() << endl;
+            }
+
+            if (list[i]->IsDerivedType(NiSourceTexture::TYPE)) {
+
+                Texture tex(list[i]);
+            }
+        }
 
     } catch (exception &e) {
 
