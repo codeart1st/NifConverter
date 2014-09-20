@@ -1,5 +1,5 @@
 #include <niflib.h>
-#include <obj/NiGeometryData.h>
+#include <obj/NiTriStripsData.h>
 
 using namespace Niflib;
 
@@ -8,13 +8,14 @@ class Mesh {
 public:
     Mesh(NiObjectRef);
 
-    string toString();
+    vector<float> getVertices();
+    vector<float> getNormals();
+    vector<unsigned short> getIndices();
+    vector<float> getUVs();
 
 private:
-    vector<Vector3> vertices;
-    vector<Vector3> normals;
-    vector<Color4> colors;
-    vector<int> indices;
-
-    vector< vector<TexCoord> > uvs;
+    vector<float> vertices;
+    vector<float> normals;
+    vector<unsigned short> indices;
+    vector<float> uvs;
 };

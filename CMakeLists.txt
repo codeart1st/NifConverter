@@ -1,13 +1,20 @@
-cmake_minimum_required(VERSION 2.8.4)
+CMAKE_MINIMUM_REQUIRED(VERSION 2.8.4)
 
-project(Demo)
+PROJECT(Demo)
 
-set(SOURCE_FILES main.cpp Settings.cpp Mesh.cpp Texture.cpp)
+SET(SOURCE_FILES
+    main.cpp
+    Settings.cpp
+    Mesh.cpp
+    Texture.cpp
+    NifParser.cpp
+)
 
-include_directories(include)
-link_directories(lib)
+ADD_COMPILE_OPTIONS(-std=c++0x)
 
-add_executable(Demo ${SOURCE_FILES})
+INCLUDE_DIRECTORIES(include)
+LINK_DIRECTORIES(lib)
 
-target_link_libraries(Demo niflib)
-target_link_libraries(Demo SOIL)
+ADD_EXECUTABLE(Demo ${SOURCE_FILES})
+
+TARGET_LINK_LIBRARIES(Demo niflib jsoncpp)

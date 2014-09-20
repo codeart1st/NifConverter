@@ -1,32 +1,67 @@
 #include "Mesh.hpp"
 
+#include <iostream>
+
 Mesh::Mesh(NiObjectRef node) {
 
-    if (!node->IsDerivedType(NiGeometryData::TYPE)) {
+    if (!node->IsDerivedType(NiTriStripsData::TYPE)) {
 
         throw new exception();
     }
 
-    NiGeometryDataRef data = DynamicCast<NiGeometryData>(node);
+    NiTriStripsDataRef data = DynamicCast<NiTriStripsData>(node);
 
-    this->vertices = data->GetVertices();
-    this->normals = data->GetNormals();
-    this->colors = data->GetColors();
-    this->indices = data->GetVertexIndices();
+    vector<Vector3> vertices = data->GetVertices();
+    vector<Vector3> normals = data->GetNormals();
+    vector<Triangle> triangles = data->GetTriangles();
+    vector<TexCoord> uvs = data->GetUVSet(0);
 
-    for (int k = 0; k < data->GetUVSetCount(); k++) {
+    for (int i = 0; i < vertices.size(); i++) {
 
-        uvs.push_back(data->GetUVSet(k));
+        this->vertices.push_back(-vertices[i].y);
+        this->vertices.push_back(vertices[i].z);
+        this->vertices.push_back(vertices[i].x);
+    }
+
+    for (int i = 0; i < normals.size(); i++) {
+
+        this->normals.push_back(-normals[i].y);
+        this->normals.push_back(normals[i].z);
+        this->normals.push_back(normals[i].x);
+    }
+
+    for (int i = 0; i < triangles.size(); i++) {
+
+        this->indices.push_back(triangles[i].v1);
+        this->indices.push_back(triangles[i].v3);
+        this->indices.push_back(triangles[i].v2);
+    }
+
+    for (int i = 0; i < uvs.size(); i++) {
+
+        this->uvs.push_back(uvs[i].u);
+        this->uvs.push_back(uvs[i].v);
+        //this->uvs.push_back(1 - uvs[i].v);
     }
 }
 
-string Mesh::toString() {
+vector<float> Mesh::getVertices() {
 
-    stringstream ss;
+    return this->vertices;
+}
 
-    for (int i = 0; i < this->vertices.size(); i++) {
-        ss << this->vertices[i].x << " " << this->vertices[i].y << " "  << this->vertices[i].z << " ";
-    }
 
-    return ss.str();
+vector<float> Mesh::getNormals() {
+
+    return this->normals;
+}
+
+vector<unsigned short> Mesh::getIndices() {
+
+    return this->indices;
+}
+
+vector<float> Mesh::getUVs() {
+
+    return this->uvs;
 }

@@ -9,73 +9,76 @@ Texture::Texture(NiObjectRef node) {
 
     NiSourceTextureRef data = DynamicCast<NiSourceTexture>(node);
 
-    switch(data->GetMipMapFormat()) {
-        case MIP_FMT_YES:
-            cout << "Texture uses mip maps." << endl;
-            break;
-        case MIP_FMT_NO:
-            cout << "Texture does not use mip maps." << endl;
-            break;
-        case MIP_FMT_DEFAULT:
-            cout << "Use default setting." << endl;
-            break;
-        default:
-            throw new exception();
-    }
-
-    switch(data->GetAlphaFormat()) {
-        case ALPHA_NONE:
-            cout << "No alpha blending; the texture is fully opaque." << endl;
-            break;
-        case ALPHA_BINARY:
-            cout << "Texture is either fully transparent or fully opaque. There are no partially transparent areas." << endl;
-            break;
-        case ALPHA_SMOOTH:
-            cout << "Full range of alpha values can be used from fully transparent to fully opaque including all partially transparent values in between." << endl;
-            break;
-        case ALPHA_DEFAULT:
-            cout << "Use default setting." << endl;
-            break;
-        default:
-            throw new exception();
-    }
-
-    switch(data->GetPixelLayout()) {
-        case PIX_LAY_PALETTISED:
-            cout << "Texture is in 8-bit paletized format." << endl;
-            break;
-        case PIX_LAY_HIGH_COLOR_16:
-            cout << "Texture is in 16-bit high color format." << endl;
-            break;
-        case PIX_LAY_TRUE_COLOR_32:
-            cout << "Texture is in 32-bit true color format." << endl;
-            break;
-        case PIX_LAY_COMPRESSED:
-            cout << "Texture is compressed." << endl;
-            break;
-        case PIX_LAY_BUMPMAP:
-            cout << "Texture is a grayscale bump map." << endl;
-            break;
-        case PIX_LAY_PALETTISED_4:
-            cout << "Texture is in 4-bit paletized format." << endl;
-            break;
-        case PIX_LAY_DEFAULT:
-            cout << "Use default setting." << endl;
-            break;
-        default:
-            throw new exception();
-    }
-
     if (data->IsTextureExternal()) {
+
         cout << "Texture is an external file." << endl;
         cout << data->GetTextureFileName() << endl;
+
     } else {
+
         cout << "Texture is included into the nif file." << endl;
         this->pixelData = DynamicCast<PixelData>(data->GetPixelData());
+
         this->pixelData->GetPixelBuffer();
     }
 }
 
-unsigned char* Texture::PixelData::GetPixelBuffer() {
+void Texture::PixelData::GetPixelBuffer() {
 
+    unsigned char * buf = this->pixelData[0].data();
+
+    DDSFormat hdr;
+
+    hdr.dwSize = 124;
+    hdr.dwFlags = 0x000A1007;
+    hdr.dwHeight = (unsigned int)this->GetHeight();
+    hdr.dwWidth = (unsigned int)this->GetWidth();
+    hdr.dwLinearSize = 0x00008000;
+    hdr.dummy1 = 0;
+    hdr.dwMipMapCount = this->numMipmaps;
+    hdr.dummy2[0] = 0;
+    hdr.dummy2[1] = 0;
+    hdr.dummy2[2] = 0;
+    hdr.dummy2[3] = 0;
+    hdr.dummy2[4] = 0;
+    hdr.dummy2[5] = 0;
+    hdr.dummy2[6] = 0;
+    hdr.dummy2[7] = 0;
+    hdr.dummy2[8] = 0;
+    hdr.dummy2[9] = 0;
+    hdr.dummy2[10] = 0;
+    hdr.ddsPixelFormat.dwSize = 0x00000020;
+    hdr.ddsPixelFormat.dwFlags = DDPF_FOURCC;
+
+    switch (this->GetPixelFormat()) {
+
+        case PX_FMT_DXT5:
+        case PX_FMT_DXT5_ALT:
+            hdr.ddsPixelFormat.dwFourCC = FOURCC_DXT5;
+            break;
+        case PX_FMT_DXT1:
+            hdr.ddsPixelFormat.dwFourCC = FOURCC_DXT1;
+            break;
+    }
+
+    hdr.ddsPixelFormat.dwBPP = 24;
+    hdr.ddsPixelFormat.dwRMask = 0x000000ff;
+    hdr.ddsPixelFormat.dwGMask = 0x0000ff00;
+    hdr.ddsPixelFormat.dwBMask = 0x00ff0000;
+    hdr.ddsPixelFormat.dwAMask = 0x00000000;
+    hdr.dwCaps = 0x00401008;
+    hdr.dwCaps2 = 0;
+    hdr.dwCaps3 = 0;
+    hdr.dwCaps4 = 0;
+    hdr.dwReserved2 = 0;
+
+    ofstream file("/home/plange/Projekte/3DPreview/output.dds", ios::binary);
+
+    char magic[] = { 0x44, 0x44, 0x53, 0x20 };
+    file.write(magic, 4);
+
+    file.write((char const *)&hdr, sizeof(DDSFormat));
+    file.write((char const *)buf, this->pixelData[0].size());
+
+    file.close();
 }
