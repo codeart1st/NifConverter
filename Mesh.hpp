@@ -1,12 +1,14 @@
 #include <niflib.h>
+
 #include <obj/NiTriStripsData.h>
+#include <obj/NiTriShapeData.h>
 
 using namespace Niflib;
 
 class Mesh {
 
 public:
-    Mesh(NiObjectRef);
+    Mesh(NiGeometryDataRef, vector<Matrix44>);
 
     vector<float> getVertices();
     vector<float> getNormals();

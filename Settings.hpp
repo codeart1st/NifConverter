@@ -2,24 +2,19 @@
 
 using namespace std;
 
-/**
-* [-t texture.dds] [-o output.json] input.nif
-*/
 class Settings {
 
 public:
 
     Settings(int, char**);
 
-    string getExternTextureName();
-    string getOutputFileName();
-    string getInputFileName();
+    string getOutputPath();
+    string getInputPath();
 
 private:
 
-    string externTextureName;
-    string outputFileName;
-    string inputFileName;
+    string inputPath;
+    string outputPath;
 };
 
 class UndefinedSettingsException : public exception {

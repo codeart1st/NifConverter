@@ -10,7 +10,7 @@ Settings::Settings(int argc, char** argv) {
 
         if (regex_match(argv[i], regex("-[a-zA-Z]", regex_constants::extended))) {
 
-            switch (argv[i][1]) {
+            /*switch (argv[i][1]) {
 
                 case 't':
                     this->externTextureName = argv[++i];
@@ -20,25 +20,28 @@ Settings::Settings(int argc, char** argv) {
                     break;
                 default:
                     throw UndefinedSettingsException();
-            }
+            }*/
 
         } else {
 
-            this->inputFileName = argv[i];
+            if (this->inputPath.length() == 0) {
+
+                this->inputPath = argv[i];
+
+            } else if (this->outputPath.length() == 0) {
+
+                this->outputPath = argv[i];
+            }
         }
     }
 }
 
-string Settings::getExternTextureName() {
-    return this->externTextureName;
+string Settings::getOutputPath() {
+    return this->outputPath;
 }
 
-string Settings::getOutputFileName() {
-    return this->outputFileName;
-}
-
-string Settings::getInputFileName() {
-    return this->inputFileName;
+string Settings::getInputPath() {
+    return this->inputPath;
 }
 
 const char *UndefinedSettingsException::what() const noexcept (true) {

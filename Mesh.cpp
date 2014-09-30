@@ -2,22 +2,55 @@
 
 #include <iostream>
 
-Mesh::Mesh(NiObjectRef node) {
+Mesh::Mesh(NiGeometryDataRef node, vector<Matrix44> matrices) {
 
-    if (!node->IsDerivedType(NiTriStripsData::TYPE)) {
+    // TODO: das wieder in den hauptcode einpflegen, da bei abzweigungen immer doppelt berechnet wird
+    Matrix44 temp = matrices[0];
+    for (int i = 1; i < matrices.size(); i++) {
+
+        temp = matrices[i] * temp;
+    }
+
+    vector<Vector3> vertices;
+    vector<Vector3> normals;
+    vector<Triangle> triangles;
+    vector<TexCoord> uvs;
+
+    if (node->IsDerivedType(NiTriStripsData::TYPE)) {
+
+        NiTriStripsDataRef data = DynamicCast<NiTriStripsData>(node);
+
+        vertices = data->GetVertices();
+        normals = data->GetNormals();
+        triangles = data->GetTriangles();
+
+        if (data->GetUVSetCount() >= 1) {
+
+            // TODO: handle more uv sets
+            uvs = data->GetUVSet(0);
+        }
+
+    } else if (node->IsDerivedType(NiTriShapeData::TYPE)) {
+
+        NiTriShapeDataRef data = DynamicCast<NiTriShapeData>(node);
+        vertices = data->GetVertices();
+        normals = data->GetNormals();
+        triangles = data->GetTriangles();
+
+        if (data->GetUVSetCount() >= 1) {
+
+            // TODO: handle more uv sets
+            uvs = data->GetUVSet(0);
+        }
+
+    } else {
 
         throw new exception();
     }
 
-    NiTriStripsDataRef data = DynamicCast<NiTriStripsData>(node);
-
-    vector<Vector3> vertices = data->GetVertices();
-    vector<Vector3> normals = data->GetNormals();
-    vector<Triangle> triangles = data->GetTriangles();
-    vector<TexCoord> uvs = data->GetUVSet(0);
-
     for (int i = 0; i < vertices.size(); i++) {
 
+        vertices[i] = temp * vertices[i];
         this->vertices.push_back(-vertices[i].y);
         this->vertices.push_back(vertices[i].z);
         this->vertices.push_back(vertices[i].x);
@@ -25,6 +58,7 @@ Mesh::Mesh(NiObjectRef node) {
 
     for (int i = 0; i < normals.size(); i++) {
 
+        normals[i] = temp * normals[i];
         this->normals.push_back(-normals[i].y);
         this->normals.push_back(normals[i].z);
         this->normals.push_back(normals[i].x);
@@ -41,7 +75,6 @@ Mesh::Mesh(NiObjectRef node) {
 
         this->uvs.push_back(uvs[i].u);
         this->uvs.push_back(uvs[i].v);
-        //this->uvs.push_back(1 - uvs[i].v);
     }
 }
 

@@ -1,31 +1,45 @@
 #include "Texture.hpp"
 
-Texture::Texture(NiObjectRef node) {
+Texture::Texture(NiSourceTextureRef node) {
 
-    if (!node->IsDerivedType(NiSourceTexture::TYPE)) {
+    name = node->GetTextureFileName();
 
-        throw new exception();
-    }
+    if (node->IsTextureExternal()) {
 
-    NiSourceTextureRef data = DynamicCast<NiSourceTexture>(node);
-
-    if (data->IsTextureExternal()) {
-
-        cout << "Texture is an external file." << endl;
-        cout << data->GetTextureFileName() << endl;
+        //cout << "Texture is an external file." << endl;
+        cout << node->GetTextureFileName() << endl;
 
     } else {
 
-        cout << "Texture is included into the nif file." << endl;
-        this->pixelData = DynamicCast<PixelData>(data->GetPixelData());
-
-        this->pixelData->GetPixelBuffer();
+        //cout << "Texture is included into the nif file." << endl;
+        this->pixelData = DynamicCast<PixelData>(node->GetPixelData());
+        this->pixelData->WriteTexture(name);
     }
 }
 
-void Texture::PixelData::GetPixelBuffer() {
+string Texture::getName() {
+
+    return name;
+}
+
+void Texture::PixelData::WriteTexture(string name) {
 
     unsigned char * buf = this->pixelData[0].data();
+
+    //cout << name << endl;
+    //cout << this->GetPixelFormat() << endl;
+
+    if (this->GetPixelFormat() == PX_FMT_PAL8) {
+
+        ofstream file("/home/plange/Projekte/3DPreview/Demo/models/" + name, ios::binary);
+
+        // TODO: export tga
+        file.write((char const *)buf, this->pixelData[0].size());
+
+        file.close();
+
+        return;
+    }
 
     DDSFormat hdr;
 
@@ -72,7 +86,7 @@ void Texture::PixelData::GetPixelBuffer() {
     hdr.dwCaps4 = 0;
     hdr.dwReserved2 = 0;
 
-    ofstream file("/home/plange/Projekte/3DPreview/output.dds", ios::binary);
+    ofstream file("/home/plange/Projekte/3DPreview/Demo/models/" + name, ios::binary);
 
     char magic[] = { 0x44, 0x44, 0x53, 0x20 };
     file.write(magic, 4);

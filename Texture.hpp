@@ -43,15 +43,18 @@ struct DDSFormat {
 class Texture {
 
 public:
-    Texture(NiObjectRef);
+    Texture(NiSourceTextureRef);
+
+    string getName();
 
 private:
 
     class PixelData : public NiPixelData {
 
     public:
-        void GetPixelBuffer();
+        void WriteTexture(string);
     };
 
+    string name;
     Ref<PixelData> pixelData;
 };
