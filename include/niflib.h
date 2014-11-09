@@ -34,6 +34,8 @@ POSSIBILITY OF SUCH DAMAGE. */
 #ifndef _NIFLIB_H_
 #define _NIFLIB_H_
 
+#define NIFLIB_STATIC_LINK
+
 //--Includes--//
 #include <iostream>
 #include <fstream>
@@ -462,7 +464,7 @@ niNode->GetChildren;
 If you have a Ref of one type, such as a generic NiObjectRef, and want to do something with the object that requires it to be the more specialized NiNode type, you use the DynamicCast() template function.  To cast from a NiObjectRef to a NiNodeRef, you would do the following:
 
 \code
-NiObjectRef root = ReadNifTree( “test.nif” );
+NiObjectRef root = ReadNifTree( ï¿½test.nifï¿½ );
 NiNodeRef node = DynamicCast<NiNode>( root );
 if ( node != NULL ) {
    ...

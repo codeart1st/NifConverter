@@ -5,6 +5,7 @@ PROJECT(NIFConverter)
 SET(SOURCE_FILES
     src/main.cpp
     src/Settings.cpp
+    src/ResourceManager.cpp
     src/nif/Texture.cpp
     src/nif/Material.cpp
     src/nif/NifParser.cpp
@@ -14,6 +15,7 @@ SET(SOURCE_FILES
 )
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "C:/Users/plange.NLBERLIN/CLionProjects/demo/build")
+set(CMAKE_EXE_LINKER_FLAGS "-static-libgcc -static-libstdc++")
 
 ADD_COMPILE_OPTIONS(-std=c++0x)
 
