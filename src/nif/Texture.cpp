@@ -22,11 +22,11 @@ Texture::Texture(NiSourceTextureRef node) {
 
         if (!CopyFile((ResourceManager::getInputPath() + "\\" + name).c_str(), (ResourceManager::getOutputPath() + "\\" + name).c_str(), 0)) {
 
-            cout << "     Can't find external texture " << (ResourceManager::getInputPath() + "\\" + name).c_str() << endl;
+            //cout << "     Can't find external texture " << (ResourceManager::getInputPath() + "\\" + name).c_str() << endl;
 
         } else {
 
-            cout << "     Copy texture to " << ResourceManager::getOutputPath() + "\\" + name << endl;
+            //cout << "     Copy texture to " << ResourceManager::getOutputPath() + "\\" + name << endl;
         }
 
     } else {
@@ -47,7 +47,7 @@ void Texture::PixelData::WriteTexture(string name, string resource) {
 
     if (this->GetPixelFormat() == PX_FMT_PAL8) {
 
-        cout << "     Writing texture to " + (resource + "\\" + name) << endl;
+        //cout << "     Writing texture to " + (resource + "\\" + name) << endl;
         ofstream file(resource + "\\" + name, ios::binary);
 
         // TODO: export tga
@@ -103,7 +103,7 @@ void Texture::PixelData::WriteTexture(string name, string resource) {
     hdr.dwCaps4 = 0;
     hdr.dwReserved2 = 0;
 
-    cout << "     Writing texture to " + (resource + "\\" + name) << endl;
+    //cout << "     Writing texture to " + (resource + "\\" + name) << endl;
     ofstream file(resource + "\\" + name, ios::binary);
 
     char magic[] = { 0x44, 0x44, 0x53, 0x20 };

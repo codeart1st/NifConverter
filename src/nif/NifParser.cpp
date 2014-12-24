@@ -27,7 +27,7 @@ NifParser::NifParser(string filePath) {
 
         NiNodeRef node = DynamicCast<NiNode>(root);
 
-        if (Settings::isAnimationExport()) {
+        if (ConverterSettings::isAnimationExport()) {
             this->scene = new SceneNodeTransform(DynamicCast<NiAVObject>(node));
         } else {
             this->scene = new SceneNode(DynamicCast<NiAVObject>(node));
@@ -56,26 +56,26 @@ void NifParser::parseLODBranch(NiLODNodeRef root, SceneNode * scene) {
     NiRangeLODDataRef rangeData = DynamicCast<NiRangeLODData>(root->GetLODLevelData());
     vector<LODRange> levels = rangeData->GetLODLevels();
 
-    cout << "     NiLODNode detected with "  << levels.size() << " branches" << endl;
+    //cout << "     NiLODNode detected with "  << levels.size() << " branches" << endl;
 
     for (int i = 0; i < levels.size(); i++) {
 
         if (levels[i].nearExtent == 0) {
 
-            cout << "     Select LODLevel " << i << " : " << children[i]->GetName();
-            cout << " (" << levels[i].nearExtent << " to " << levels[i].farExtent << ")" << endl;
+            //cout << "     Select LODLevel " << i << " : " << children[i]->GetName();
+            //cout << " (" << levels[i].nearExtent << " to " << levels[i].farExtent << ")" << endl;
 
             if (children[i]->IsDerivedType(NiNode::TYPE)) {
 
                 NiNodeRef node = DynamicCast<NiNode>(children[i]);
 
-                if (Settings::isAnimationExport()) {
+                if (ConverterSettings::isAnimationExport()) {
                     scene->addChildren(SceneNodeTransform(DynamicCast<NiAVObject>(node)));
                 } else {
                     scene->addChildren(SceneNode(DynamicCast<NiAVObject>(node)));
                 }
 
-                parseChildren(node, scene);
+                parseChildren(node, scene->getLastChildren());
 
                 return;
             }
@@ -120,11 +120,12 @@ void NifParser::parseChildren(NiNodeRef root, SceneNode * scene) {
 
     for (auto &child : children) {
 
-        if (child->IsDerivedType(NiNode::TYPE)) {
+        // not supported billboard plane at the moment - orthogonal to camera
+        if (child->IsDerivedType(NiNode::TYPE) && !child->IsSameType(NiBillboardNode::TYPE)) {
 
             NiNodeRef node = DynamicCast<NiNode>(child);
 
-            if (Settings::isAnimationExport()) {
+            if (ConverterSettings::isAnimationExport()) {
                 scene->addChildren(SceneNodeTransform(DynamicCast<NiAVObject>(node)));
             } else {
                 scene->addChildren(SceneNode(DynamicCast<NiAVObject>(node)));

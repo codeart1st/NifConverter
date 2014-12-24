@@ -5,7 +5,7 @@
 #include "SceneNode.hpp"
 #include "SceneMesh.hpp"
 
-#include "../Settings.hpp"
+#include "../ConverterSettings.hpp"
 
 #include <niflib.h>
 #include <obj/NiNode.h>
@@ -13,6 +13,7 @@
 #include <obj/NiExtraData.h>
 #include <obj/NiRangeLODData.h>
 #include <obj/NiTriBasedGeom.h>
+#include <obj/NiBillboardNode.h>
 #include <obj/NiStringExtraData.h>
 #include <obj/NiTextKeyExtraData.h>
 
